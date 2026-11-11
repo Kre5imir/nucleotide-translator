@@ -1,40 +1,71 @@
-# Nucleotide translator
+# Nucleotide ORF finder
 
-Translate a DNA or RNA sequence into a protein using the standard genetic code (one-letter amino-acid codes). The translator is a single command-line script and uses only the Python standard library.
+This project contains a simple Python script that reads a DNA sequence file and searches for open reading frames (ORFs) across all six reading frames.
 
-DNA (`T`) and RNA (`U`) are detected from the sequence and share the same codon table. A sequence that contains both `T` and `U` is rejected. Letters may be upper or lower case. Spaces, tabs, and newlines are ignored. Any other character is an error.
+The program:
+- prompts for a filename
+- reads the file contents
+- removes whitespace and normalizes the sequence to uppercase
+- generates the three forward reading frames and the three reverse-complement reading frames
+- translates each frame into amino acids using a codon table
+- identifies open reading frames starting at methionine (`M`) and ending at stop codons (`_`)
+- prints the frame number, start/stop codon positions, and each ORF found
 
-Translation uses reading frame 1 unless you choose another frame. It stops at the first in-frame stop codon. With `--through-stops`, translation continues and each stop is written as `*`. Only complete codons are translated. If bases remain after the last complete codon in the chosen frame, a short note goes to stderr and the protein from the complete codons is still printed on stdout.
+This is a six-frame ORF analysis tool, not a single-sequence DNA-to-protein translator with command-line flags.
 
-## Usage
+## How to run
+
+From the project directory:
 
 ```bash
-python3 nucleotide/translate.py ATGCCCAAATAG
-# MPK
-
-python3 nucleotide/translate.py --frame 2 AATGGC
-# M
-# note: 2 leftover bases in frame 2 were not translated
-
-python3 nucleotide/translate.py --through-stops ATGTAATAG
-# M**
-
-printf 'AUGGCUUCAAAAUAG\n' | python3 nucleotide/translate.py
-# MASK
+py -3 translate.py
 ```
 
-## Flags
+The script will ask for a filename, for example:
 
-| Flag | Default | Meaning |
-| --- | --- | --- |
-| `sequence` | read stdin | Nucleotide sequence. Optional positional argument. |
-| `--frame 1\|2\|3` | `1` | Reading frame. Frame 2 skips the first base; frame 3 skips the first two. |
-| `--through-stops` | off | Keep going after stop codons and write them as `*`. Without this flag, translation stops at the first in-frame stop and the stop is omitted. |
+```text
+Enter the name of the file: tmp.fa
+```
 
-Exit status is `0` after a translation, `1` when the sequence is invalid or missing, and `2` when the arguments themselves are invalid.
+The file should look like this:
+
+```text
+>example
+ATGAAATAG
+```
+
+## Example output
+
+```text
+>example
+
+ Frame 1 start and stop positions are [[0], [2]]
+
+ORF 1 : MK amino acid: 2 nucleotides 6
+```
+
+The output shows:
+- the FASTA header
+- the frame number
+- start and stop positions in the translated protein
+- each ORF sequence found in that frame
+
+## Notes
+
+- The script reads a file, not a raw sequence argument from the command line.
+- It ignores whitespace in the sequence file.
+- It keeps only the sequence content after the first line, so a FASTA header is printed but not included in the nucleotide search.
+- If the file cannot be opened, the script prints an error and exits with status 1.
 
 ## Tests
 
+The current test suite checks the real script behavior by running it as a subprocess:
+
 ```bash
-python3 -m unittest nucleotide.test_translate
+py -3 -m unittest -q
 ```
+
+The tests cover:
+- reading a FASTA file and reporting ORFs
+- handling a missing file cleanly
+- processing a file with a header and sequence without crashing
