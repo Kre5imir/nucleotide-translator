@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
-#This program translates given nucleotide sequence in to possible open reading frame(protein)
-#run the program and input the name of the file 
-#output should give you 6 reading frames, open reading frames for each frame and start stop index of aa
-#output can be compared on ncbi website (https://www.ncbi.nlm.nih.gov/orffinder/)
+
 import sys
 def main():
 

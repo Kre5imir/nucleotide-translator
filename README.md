@@ -1,6 +1,10 @@
 # Nucleotide ORF finder
 
-This project contains a simple Python script that reads a DNA sequence file and searches for open reading frames (ORFs) across all six reading frames.
+
+#This program translates given nucleotide sequence in to possible open reading frame(protein)
+#run the program and input the name of the file 
+#output should give you 6 reading frames, open reading frames for each frame and start stop index of aa
+#output can be compared on ncbi website (https://www.ncbi.nlm.nih.gov/orffinder/)
 
 The program:
 - prompts for a filename
